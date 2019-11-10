@@ -3,8 +3,7 @@ import { Text, View } from "react-native";
 import styles from "./styles";
 import { stateContext, dispatchContext } from "../../../../contexts";
 
-// Итог
-
+/** Компонент, который показывает итоговую цену */
 const CartTotal = (props) =>
 {
     const context = useContext(stateContext);

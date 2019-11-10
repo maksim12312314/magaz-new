@@ -3,8 +3,7 @@ import { View, Text } from "react-native";
 import ItemCount from "./ItemCount";
 import styles from "./styles";
 
-// Товар в корзине
-
+/** Компонент товара в корзине */
 const CartItem = (props) =>
 {
     const {id, name, price, count} = props.data;
