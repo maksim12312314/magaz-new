@@ -8,10 +8,10 @@ import styles from "./styles";
 import { STORE_ADDRESS } from "../../../config";
 
 import {
-    SetCategoriesList,
+    SetCategoryList,
 } from "../../../actions";
 import { getCategoryListQuery } from "../../../queries";
-import { addCategory, getDBCategoryList } from "../../../db_handler";
+import { addCategoryToDB, getCategoryListFromDB } from "../../../db_handler";
 import { HeaderTitle, HeaderCartButton } from "../../Header";
 import useFetch from "../../../network_handler";
 
@@ -44,7 +44,7 @@ const CategoryList = (props) =>
 
     const onMount = (setLoading, setError, abortController) => {
         if ( !state?.categories?.length ) {
-            getDBCategoryList((tr, result) => {
+            getCategoryListFromDB((tr, result) => {
                 let data = [];
                 for (let i = 0; i <= result.rows.length; i++) {
                     const row = result.rows.item(i);
@@ -61,16 +61,16 @@ const CategoryList = (props) =>
                             cached: true,
                         });
                 }
-                dispatch(SetCategoriesList(data));
+                dispatch(SetCategoryList(data));
                 setLoading(false);
             });
         }
     };
     const onSuccess = ({data}) => {
         data?.productCategories?.nodes?.map( (v, i) => {
-            addCategory(v.name, v.productCategoryId, v.image?.mediaDetails?.file);
+            addCategoryToDB(v.name, v.productCategoryId, v.image?.mediaDetails?.file);
         });
-        dispatch(SetCategoriesList(data?.productCategories?.nodes));
+        dispatch(SetCategoryList(data?.productCategories?.nodes));
     };
 
 	const [

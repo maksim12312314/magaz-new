@@ -7,28 +7,27 @@ import { useTranslation } from "react-i18next";
 import OurIconButton from "../../../../OurIconButton";
 
 import {
-    Plus,
-    Minus,
-    DeleteFromCart,
+    DeleteProductFromCart,
+    DecreaseProductQuantity,
+    IncreaseProductQuantity,
 } from "../../../../../actions";
 
 
 const size = Math.max(Dimensions.get("window").width, Dimensions.get("window").height) * .05;
 
 /** Компонент, который отображает количество товаров в корзине */
-const ItemCount = (props) =>
-{
+const ItemCount = (props) => {
     const dispatch = useContext(dispatchContext);
     const { productId } = props;
     const { t } = useTranslation();
 
     const plusPressed = (e) => {
         // Добавляем 1 товар
-        dispatch(Plus(productId));
+        dispatch(IncreaseProductQuantity(productId));
     };
     const minusPressed = (e) => {
         // Вычитаем 1 товар
-        dispatch(Minus(productId, dispatch, t));
+        dispatch(DecreaseProductQuantity(productId, dispatch, t));
     };
     const deletePressed = (e) => {
         Alert.alert(t("cartDeleteTitle"), t("cartDeleteMessage"), [
@@ -39,7 +38,7 @@ const ItemCount = (props) =>
             {
                 text: t("ok"),
                 onPress: () => {
-                    dispatch(DeleteFromCart(productId, true));
+                    dispatch(DeleteProductFromCart(productId, true));
                 },
             },
         ],
@@ -50,7 +49,7 @@ const ItemCount = (props) =>
         <View style={styles.container}>
             <View style={styles.itemControl}>
                 <OurIconButton size={size}
-                               style={{margin: 1}}
+                               style={{margin: 1, marginLeft: 0}}
                                icon={faPlusCircle}
                                onPress={plusPressed}
                                doLongPress={true}/>
@@ -60,7 +59,7 @@ const ItemCount = (props) =>
                                onPress={minusPressed}
                                doLongPress={true}/>
                 <OurIconButton size={size}
-                               style={{margin: 1}}
+                               style={{margin: 1, marginRight: 0}}
                                icon={faTimesCircle}
                                onPress={deletePressed}/>
             </View>
