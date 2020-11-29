@@ -18,6 +18,9 @@ import {
     ACTION_TYPE_DELIVERY_CLEAR,
     ACTION_TYPE_ORDER_CHANGE_STATUS,
     ACTION_TYPE_ORDER_DELETE,
+    ACTION_TYPE_MODAL_SHOW,
+    ACTION_TYPE_MODAL_CLOSE,
+    ACTION_TYPE_MODAL_TOGGLE,
 } from "./types";
 import {
     addProductToCartDB,
@@ -33,10 +36,22 @@ const showToastMessage = (message) => {
     ToastAndroid.show(message, ToastAndroid.SHORT);
 };
 
+// Начальный state
 export const initialState = {
-    cartItems: new Map(),
-    cartTotalPrice: 0,
-    orders: new Map(),
+    // Данные модального окна
+    modal: {
+        visible: false, // Видимость окна
+        title: { text: "", params: {} }, // Заголовок
+        text: { text: "", params: {} }, // Текст
+        animationIn: "slideInRight", // Анимация появления
+        animationOut: "slideOutLeft", // Анимация исчезновения
+        buttons: [], // Кнопки
+    },
+    cartItems: new Map(), // Корзина
+    cartTotalPrice: 0, // Итоговая цена для корзины
+    orders: new Map(), // Список заказов
+
+    // Детали заказа
     deliveryDetails: {
         name: {
             name: "name",
@@ -82,6 +97,7 @@ export const initialState = {
  * Редюсер
  * @param  {object} state - объект state
  * @param  {object} action - объект action
+ * @returns {object}
  */
 export const reducer = (state, action) => {
     /**
@@ -118,6 +134,14 @@ export const reducer = (state, action) => {
             const newState = {...state};
 
             newState.cartItems = action.payload || [];
+
+            // Расчитываем итоговую цену
+            newState.cartTotalPrice = 0;
+            if ( newState.cartItems.size ) {
+                newState.cartItems.forEach( (value) => {
+                    newState.cartTotalPrice += value.price * value.productQuantity;
+                });
+            }
 
             return newState;
         }
@@ -297,10 +321,10 @@ export const reducer = (state, action) => {
         case ACTION_TYPE_ORDERS_ADD_TO_LIST: {
             const newState = {...state};
             const { payload } = action;
+            newState.orders.set(payload.uuid, payload);
 
-            newState.orders.set(newState.orders.size + 1, action.payload);
-
-            addOrderToDB(payload.deliveryDetails.name,
+            addOrderToDB(payload.uuid,
+                payload.deliveryDetails.name,
                 payload.deliveryDetails.phone,
                 payload.deliveryDetails.address,
                 payload.deliveryDetails.floor,
@@ -323,7 +347,7 @@ export const reducer = (state, action) => {
 
             for ( const [fn, data] of Object.entries(newState.deliveryDetails) ) {
                 if ( !data.valid )
-                    valid = false;
+                    valid = true;
             }
             newState.allDetailsAreValid = valid;
 
@@ -335,8 +359,44 @@ export const reducer = (state, action) => {
          */
         case ACTION_TYPE_DELIVERY_CLEAR: {
             const newState = {...state};
-
-            newState.deliveryDetails = initialState.deliveryDetails;
+            newState.deliveryDetails = {
+                name: {
+                    name: "name",
+                    placeholder: "orderFormName",
+                    value: "",
+                    valid: false,
+                },
+                phone: {
+                    name: "phone",
+                    placeholder: "orderFormPhone",
+                    value: "",
+                    valid: false,
+                },
+                address: {
+                    name: "address",
+                    placeholder: "orderFormAddress",
+                    value: "",
+                    valid: false,
+                },
+                floor: {
+                    name: "floor",
+                    placeholder: "orderFormFloor",
+                    value: "",
+                    valid: true,
+                },
+                notes: {
+                    name: "notes",
+                    placeholder: "orderFormNotes",
+                    value: "",
+                    valid: true,
+                },
+                time: {
+                    name: "time",
+                    placeholder: "orderFormDeliveryTime",
+                    value: "",
+                    valid: false,
+                },
+            };
             newState.allDetailsAreValid = false;
 
             return newState;
@@ -356,6 +416,7 @@ export const reducer = (state, action) => {
 
             return newState;
         }
+
         /**
          * Удаляет заказ
          */
@@ -365,6 +426,40 @@ export const reducer = (state, action) => {
             newState.orders.delete(action.payload);
 
             deleteOrderFromDB(action.payload);
+
+            return newState;
+        }
+
+        /**
+         * Открывает модальное окно
+         */
+        case ACTION_TYPE_MODAL_SHOW: {
+            const newState = {...state};
+            const { payload } = action;
+            if ( payload )
+                newState.modal = { ...newState.modal, ...payload }
+            newState.modal.visible = true;
+
+            return newState;
+        }
+        /**
+         * Закрывает модальное окно
+         */
+        case ACTION_TYPE_MODAL_CLOSE: {
+            const newState = {...state};
+            newState.modal.visible = false;
+
+            return newState;
+        }
+        /**
+         * Переключает состояние модального окна
+         */
+        case ACTION_TYPE_MODAL_TOGGLE: {
+            const newState = {...state};
+            const { payload } = action;
+            if ( payload )
+                newState.modal = { ...newState.modal, ...payload }
+            newState.modal.visible = !newState.modal.visible;
 
             return newState;
         }

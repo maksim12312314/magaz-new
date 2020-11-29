@@ -1,47 +1,28 @@
 import React, { useState, useContext, useLayoutEffect } from "react";
 import { Animated, FlatList, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
-import { HeaderBackButton, HeaderCartButton, HeaderTitle } from "./../../Header/index";
-import { stateContext } from "../../../contexts";
-import OurText from "../../OurText";
-import OurTextButton from "../../OurTextButton";
+import { stateContext } from "~/contexts";
+import { HeaderBackButton, HeaderCartButton, HeaderTitle } from "~/components/Header/index";
+import OurText from "~/components/OurText";
+import OurTextButton from "~/components/OurTextButton";
 import OrderItem from "./OrderItem";
 import styles from "./styles";
 
-export const ORDER_STATUS_TO_BE_SHIPPED = 0;
-export const ORDER_STATUS_SHIPPED 		= 1;
-export const ORDER_STATUS_CANCELED 		= 2;
-
-export const statusToText = (status) => {
-    const statuses = [
-        "orderStatusToBeShipped",
-        "orderStatusShipped",
-        "orderStatusCanceled",
-    ];
-    return statuses[status] || "orderStatusToBeShipped"
-};
 
 const LocallyAnimatedFlatList = ({data, navigation}) => {
-    const [x, setX] = useState(new Animated.Value(0));
-    const [y, setY] = useState(new Animated.Value(0));
-    const onScroll = Animated.event([{ nativeEvent: { contentOffset: { x, y } } }], {
-        useNativeDriver: true,
-    });
     
     const renderItemsBlock = ({item, index}) => {
         return (
-            <OrderItem x={x} y={y} navigation={navigation} index={index} data={item}/>
+            <OrderItem navigation={navigation} data={item}/>
         );
     };
 
     return (
-        <Animated.FlatList
+        <FlatList
             style={styles.flatList}
             data={data}
             renderItem={renderItemsBlock}
             keyExtractor={(item, index) => String(index)}
-
-            {...{ onScroll }}
         />
     )
 };

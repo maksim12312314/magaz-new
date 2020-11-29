@@ -1,6 +1,6 @@
 const ru = {
     translation: {
-        categoryListTitle: "Наш Магазин",
+        categoryListTitle: "Едопровод",
 
         activityAborted: "Действие отменено.",
         activityAbortedRefresh: "Обновить",
@@ -16,6 +16,8 @@ const ru = {
         cancel: "Отмена",
         close: "Закрыть",
         ok: "Ок",
+
+        appInfo: "Версия: {{version}}\n\nАвторы:\nVladislav Drogin\nSergey Nameless\nDanil Stavnichiy\nMaxim Saryev",
 
         notAvailable: "н/д",
 

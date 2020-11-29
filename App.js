@@ -6,20 +6,24 @@ import React, { useReducer, useEffect } from "react";
 import { AppRegistry } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AppStackNavigator from "./navigation";
-import { name } from "./app.json";
+import { expo } from "./app.json";
 import * as hehe from './utils';
 import { reducer, initialState } from "./reducer";
 import { stateContext, dispatchContext } from "./contexts";
 import { createDBTables, getCartFromDB, getOrdersFromDB } from "./db_handler";
-import { ComputeTotalPrice, SetCartProducts, SetOrderList } from "./actions";
+import { SetCartProducts, SetOrderList } from "./actions";
+import OurModal from "./components/OurModal";
 import "./i18n";
 
-/**Контейнер приложения */
+/** Контейнер приложения **/
 const AppContainer = () => {
 	return (
-		<NavigationContainer>
-			<AppStackNavigator/>
-		</NavigationContainer>
+		<>
+			<NavigationContainer>
+				<AppStackNavigator/>
+			</NavigationContainer>
+			<OurModal/>
+		</>
 	);	
 }
 
@@ -38,7 +42,6 @@ const App = () => {
 				data.set(v.productId, v);
 			});
 			dispatch(SetCartProducts(data));
-			dispatch(ComputeTotalPrice());
 		},
 		(err) => {
 			console.log("WELL SHIT", err)
@@ -51,13 +54,16 @@ const App = () => {
 			const data = new Map();
 			result.rows["_array"].map( (v, i) => {
 				let products = new Map();
+				// Безопасно парсим товары
 				try {
 					const json = JSON.parse(v.products);
 					products = new Map(Object.entries(json));
 				} catch(err) { console.log("WTF", err) }
 
+				// Формируем данные для дальнейшей работы с ними
 				const order = {
 					id: v.id,
+					uuid: v.uuid,
 					deliveryDetails: {
 						name: v.customerName,
 						phone: v.customerPhone,
@@ -70,7 +76,7 @@ const App = () => {
 					status: v.status,
 					totalPrice: v.totalPrice,
 				};
-				data.set(order.id, order);
+				data.set(order.uuid, order);
 			});
 			dispatch(SetOrderList(data));
 		},
@@ -87,6 +93,6 @@ const App = () => {
 		</stateContext.Provider>
 	);
 };
-AppRegistry.registerComponent(name, () => App);
+AppRegistry.registerComponent(expo.name, () => App);
 
 export default App;

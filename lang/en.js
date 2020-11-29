@@ -1,6 +1,6 @@
 const en = {
     translation: {
-        categoryListTitle: "Our pretty magaz",
+        categoryListTitle: "Edoprovod",
 
         activityAborted: "Action canceled.",
         activityAbortedRefresh: "Refresh",
@@ -16,6 +16,8 @@ const en = {
         cancel: "Cancel",
         close: "Close",
         ok: "Ok",
+
+        appInfo: "Version: {{version}}\n\nAuthors:\nVladislav Drogin\nSergey Nameless\nDanil Stavnichiy\nMaxim Saryev",
 
         notAvailable: "n/a",
 

@@ -1,14 +1,13 @@
 import React, { useContext, useLayoutEffect } from "react";
 import { View, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { HeaderBackButton, HeaderTitle, HeaderCartButton } from "../../Header";
-import { stateContext, dispatchContext } from "../../../contexts";
-import { AddOrderToList, ClearCart, ClearDeliveryDetails } from "../../../actions";
-import { ORDER_STATUS_TO_BE_SHIPPED } from "../Orders";
-
-import OurText from "../../OurText";
-import OurTextButton from "../../OurTextButton";
-
+import uuid from "react-native-uuid";
+import { stateContext, dispatchContext } from "~/contexts";
+import { AddOrderToList, ClearCart, ClearDeliveryDetails } from "~/actions";
+import { HeaderBackButton, HeaderTitle, HeaderCartButton } from "~/components/Header";
+import { ORDER_STATUS_TO_BE_SHIPPED } from "~/components/pages/Orders/orderStates";
+import OurText from "~/components/OurText";
+import OurTextButton from "~/components/OurTextButton";
 import styles from "./styles";
 
 const DeliveryDetailsItem = (props) => {
@@ -54,6 +53,7 @@ const DeliveryDetailsCheck = (props) => {
                 notes: state.deliveryDetails.notes.value,
                 time: state.deliveryDetails.time.value,
             },
+            uuid: uuid.v1(),
             status:  ORDER_STATUS_TO_BE_SHIPPED,
             products: state.cartItems,
             totalPrice: state.cartTotalPrice,
